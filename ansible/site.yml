@@ -1,0 +1,9 @@
+---
+- name: Deploy Student Academic Management Platform
+  hosts: student_app
+  become: true
+  roles:
+    - common
+    - docker
+    - student_app
+    - nginx
