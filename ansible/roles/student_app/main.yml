@@ -1,0 +1,30 @@
+---
+- name: Create application directory
+  ansible.builtin.file:
+    path: /opt/student-academic-platform
+    state: directory
+    mode: "0755"
+
+- name: Copy Flask application files
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../app/"
+    dest: /opt/student-academic-platform/
+    mode: "0644"
+
+- name: Build student application image
+  community.docker.docker_image:
+    name: student-academic-platform
+    tag: v1.0.0
+    source: build
+    build:
+      path: /opt/student-academic-platform
+    state: present
+
+- name: Run student application container
+  community.docker.docker_container:
+    name: student-academic-platform
+    image: student-academic-platform:v1.0.0
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "127.0.0.1:8080:8080"
